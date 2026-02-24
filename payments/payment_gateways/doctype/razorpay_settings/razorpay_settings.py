@@ -325,7 +325,7 @@ class RazorpaySettings(Document):
 		return kwargs
 
 	def get_payment_url(self, **kwargs):
-		if not kwargs.get("order_id"):
+		if not kwargs.get("order_id") or (isinstance(kwargs.get("order_id"), str) and not kwargs.get("order_id").startswith("order_")):
 			order = self.create_order(**kwargs)
 			kwargs.update({"order_id": order.get("id")})
 
@@ -336,7 +336,7 @@ class RazorpaySettings(Document):
 		# Creating Orders https://razorpay.com/docs/api/orders/
 
 		# convert rupees to paisa
-		kwargs["amount"] = int(kwargs["amount"] * 100)
+		kwargs["amount"] = int(float(kwargs["amount"]) * 100)
 
 		# Create integration log
 		integration_request = create_request_log(kwargs, service_name="Razorpay")
